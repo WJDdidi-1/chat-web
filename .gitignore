@@ -1,1 +1,7 @@
-.vercel
+# dependencies
+node_modules/
+# local configuration (contains PORT / HOST / ALLOWED_ORIGINS)
+.env
+.env.local
+# macOS
+.DS_Store
