@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  syntax:
+    name: Server parses (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["18", "22"]
+    defaults:
+      run:
+        working-directory: chat-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Syntax check
+        run: node --check server.js
+      - name: Dependencies resolve from the lockfile
+        run: npm ci --ignore-scripts
+      - name: The app loads without opening a port
+        run: node -e "process.env.NODE_ENV='production'; const app=require('./server.js'); if (typeof app !== 'function') { throw new Error('server.js did not export the express app'); } console.log('app exported');"

@@ -7,19 +7,28 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
-// 配置 Socket.IO，适配 Vercel 环境
+// 允许的来源：由 ALLOWED_ORIGINS 决定（逗号分隔），留空即只允许同源。
+// 之前写的是 origin: "*" + credentials: true —— 浏览器会直接拒绝这个组合
+// （通配符不能与凭证共存），而且等于让任何站点都能连上来。
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const corsOptions = {
+    origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+    methods: ['GET', 'POST'],
+    credentials: allowedOrigins.length > 0,
+};
+
 const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"],
-        credentials: true
-    },
-    path: '/socket.io/', // 明确指定路径
-    transports: ['websocket', 'polling'], // 支持 WebSocket 和轮询
+    cors: corsOptions,
+    path: '/socket.io/',
+    transports: ['websocket', 'polling'],
     pingTimeout: 60000,
 });
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.static('public'));
 
 // 健康检查路由
