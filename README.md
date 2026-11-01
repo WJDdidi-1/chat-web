@@ -53,4 +53,4 @@ Serverless 函数不会长驻，Socket.IO 的长连接因此不能依赖它—�
 
 ## 许可
 
-MIT，见 [LICENSE](LICENSE)（`package.json` 里的 `license` 字段与之一致）。
+Apache-2.0，见 [LICENSE](LICENSE)（`package.json` 里的 `license` 字段与之一致）。
